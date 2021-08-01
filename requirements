@@ -1,0 +1,11 @@
+Flask
+flask-restful
+pytz
+flask-sqlalchemy
+flask-migrate
+alembic
+psycopg2
+flask-marshmallow
+marshmallow
+pyjwt
+marshmallow-dataclass
