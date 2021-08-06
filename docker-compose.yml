@@ -1,0 +1,46 @@
+version: "3.9"
+services:
+  database:
+    container_name: postgres
+    build:
+      context: .
+      dockerfile: ./postgres/Dockerfile
+    restart: always
+    healthcheck:
+      test: pg_isready -U postgres
+      timeout: 45s
+      interval: 10s
+      retries: 10
+    environment: # will be used by the init script
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - POSTGRES_HOST=${POSTGRES_HOST}
+      - POSTGRES_PORT=${POSTGRES_PORT}
+      - POSTGRES_DB=${POSTGRES_DB}
+    ports:
+      - 5432:5432
+    volumes:
+      - db_volume:/var/lib/postgresql
+
+  webapp:
+    container_name: stackoverflow
+    build:
+      context: .
+      dockerfile: Dockerfile
+    environment: # will be used by the init script
+      - FLASK_ENV=${FLASK_ENV}
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - POSTGRES_HOST=${POSTGRES_HOST}
+      - POSTGRES_PORT=${POSTGRES_PORT}
+      - POSTGRES_DB=${POSTGRES_DB}
+    ports:
+      - 5000:5000
+    depends_on:
+      database:
+        condition: service_healthy
+    links:
+      - database
+
+volumes:
+  db_volume:

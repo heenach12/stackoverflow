@@ -1,13 +1,13 @@
 from marshmallow import Schema, fields, post_load, post_dump, ValidationError, validate
 from stackoverflow.models import User, Question, Answer, Comment
 from marshmallow_dataclass import dataclass
-from stackoverflow.app import app
+# from stackoverflow.app import app
 from flask_marshmallow import Marshmallow
 
 
-ma = Marshmallow(app)
+# ma = Marshmallow(app)
 
-class UserSchema(ma.Schema):
+class UserSchema(Schema):
     """Schema for the User Model."""
     id = fields.UUID()
     username = fields.String()

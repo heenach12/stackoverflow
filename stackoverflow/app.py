@@ -2,6 +2,7 @@ from flask import Flask, g
 from flask_marshmallow import Marshmallow
 from stackoverflow.config import config_settings
 from flask_sqlalchemy import SQLAlchemy
+from flask_migrate import Migrate
 from stackoverflow import db
 import jwt
 from flask_restful import Api
@@ -11,6 +12,7 @@ from stackoverflow.views import UserView, UserResourceView, QuestionListView, Qu
 
 app = Flask(__name__)
 
+migrate = Migrate()
 
 app.config.from_object(config_settings["development"])
 app.config["SECRET_KEY"] = "badf37c48027029de6d4a8b8c4741881"
@@ -32,8 +34,9 @@ api.add_resource(UserRegistration, USER_ENDPOINT, f"{USER_ENDPOINT}/signup")
 api.add_resource(UserLogin, USER_ENDPOINT, f"{USER_ENDPOINT}/login")
 
 db.init_app(app)
+migrate.init_app(app, db)
 
 
 if __name__=="__main__":
-    app.run(debug=True)
+    app.run(debug=True, host="0.0.0.0", port="5000")
 

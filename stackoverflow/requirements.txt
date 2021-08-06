@@ -3,9 +3,11 @@ flask-restful
 pytz
 flask-sqlalchemy
 flask-migrate
+marshmallow-sqlalchemy
 alembic
-psycopg2
+psycopg2-binary
 flask-marshmallow
 marshmallow
 pyjwt
 marshmallow-dataclass
+passlib
