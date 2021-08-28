@@ -1,16 +1,17 @@
 version: "3.9"
 services:
   database:
-    container_name: postgres
-    build:
-      context: .
-      dockerfile: ./postgres/Dockerfile
+#    container_name: postgres
+#    build:
+#      context: .
+#      dockerfile: ./postgres/Dockerfile
+    image: postgres:alpine
     restart: always
-    healthcheck:
-      test: pg_isready -U postgres
-      timeout: 45s
-      interval: 10s
-      retries: 10
+#    healthcheck:
+#      test: pg_isready -U postgres
+#      timeout: 45s
+#      interval: 10s
+#      retries: 10
     environment: # will be used by the init script
       - POSTGRES_USER=${POSTGRES_USER}
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
@@ -37,10 +38,10 @@ services:
     ports:
       - 5000:5000
     depends_on:
-      database:
-        condition: service_healthy
-    links:
       - database
+#        condition: service_healthy
+#    links:
+#      - database
 
 volumes:
   db_volume:

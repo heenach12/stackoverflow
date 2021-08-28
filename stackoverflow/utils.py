@@ -1,8 +1,27 @@
 from stackoverflow.models import User, Question, Answer, Comment
 from functools import wraps
-from stackoverflow.app import app
+# from stackoverflow.app import app
 from flask import request, jsonify
+import json, datetime
+from datetime import time, timedelta
+
 import jwt
+
+def generate_token(username, password):
+    # user = User.find_by_username(username)
+    user = User.query.filter_by(username=username).first()
+    if not user:
+        return {"details": f"User {username} does not exist."}
+
+    payload = {
+        "user_email": user.email,
+        "exp": datetime.datetime.utcnow() + timedelta(minutes=120)
+    }
+    if User.verify_hash(password, user.password):
+        token = jwt.encode(payload, "54b95540ea78f59c9f5877662f3075c5", algorithm="HS256")
+
+        return token
+    return None
 
 
 def token_required(f):
@@ -22,7 +41,7 @@ def token_required(f):
             return jsonify({'details': 'a valid token is missing'})
         payload=None
         try:
-            payload = jwt.decode(token, app.config["JWT_SECRET_KEY"], algorithms=["HS256"])
+            payload = jwt.decode(token, "54b95540ea78f59c9f5877662f3075c5", algorithms=["HS256"])
             print("payload is", payload)
         except Exception:
             return jsonify({"details": "Token is expired or invalid, please login"})

@@ -5,9 +5,9 @@ from flask_restful import reqparse
 from stackoverflow import db
 from stackoverflow.models import User, Question, Answer, Comment
 from stackoverflow.models_schema import UserSchema, QuestionSchema, AnswerSchema, CommentSchema
-from stackoverflow.app import app
+# from stackoverflow.app import app
 import jwt
-from stackoverflow.utils import token_required, admin_required, check_user, check_answer_user, checkuser_comment
+from stackoverflow.utils import token_required, admin_required, check_user, check_answer_user, checkuser_comment, generate_token
 from flask_restful import  Resource
 
 
@@ -42,21 +42,23 @@ class UserLogin(Resource):
         username = request_data.get("username")
         password = request_data.get("password")
 
-        user = User.find_by_username(username)
-
-        if not user:
-            return {"details": f"User {username} does not exist."}
-
-        payload = {
-            "user_email": user.email,
-            "exp": datetime.datetime.utcnow() + timedelta(minutes=120)
-        }
-        if User.verify_hash(password, user.password):
-            token = jwt.encode(payload, app.config["JWT_SECRET_KEY"], algorithm="HS256")
-
+        token = generate_token(username, password)
+        # user = User.find_by_username(username)
+        #
+        # if not user:
+        #     return {"details": f"User {username} does not exist."}
+        #
+        # payload = {
+        #     "user_email": user.email,
+        #     "exp": datetime.datetime.utcnow() + timedelta(minutes=120)
+        # }
+        # if User.verify_hash(password, user.password):
+        #     token = jwt.encode(payload, "54b95540ea78f59c9f5877662f3075c5", algorithm="HS256")
+        #
+        if token:
             return jsonify({"token": token})
-
-        return {"details" : "Could not authenticate the user."}
+        else:
+            return {"details" : "Could not authenticate the user."}
 
 
 class UserView(Resource):
@@ -67,7 +69,7 @@ class UserView(Resource):
         user_details = User.query.all()
         schema = UserSchema()
         user_json = UserSchema(many=True)
-        return user_json.dump(user_details)
+        return jsonify({"details":user_json.dump(user_details)})
 
 
 class UserResourceView(Resource):

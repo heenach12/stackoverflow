@@ -11,3 +11,5 @@ marshmallow
 pyjwt
 marshmallow-dataclass
 passlib
+pytest
+
